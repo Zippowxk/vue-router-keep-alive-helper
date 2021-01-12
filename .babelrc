@@ -1,0 +1,15 @@
+{
+  "presets": [
+    [
+      "@babel/preset-env",
+      {
+        "modules": false,
+        "loose": true,
+        "targets": {
+          "browsers": "> 1%, IE 11, not op_mini all, not dead",
+          "node": 8
+        }
+      }
+    ]
+  ]
+}

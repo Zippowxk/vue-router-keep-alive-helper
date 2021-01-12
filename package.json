@@ -1,0 +1,29 @@
+{
+  "name": "vue-router-keep-alive-helper",
+  "version": "0.0.1",
+  "description": "Auto destroy keepAlive components when go back",
+  "main": "dist/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Zippowxk/vue-router-keep-alive-helper.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Zippowxk/vue-router-keep-alive-helper/issues"
+  },
+  "homepage": "https://github.com/Zippowxk/vue-router-keep-alive-helper#readme",
+  "devDependencies": {
+    "@babel/core": "^7.12.10",
+    "@babel/plugin-transform-runtime": "^7.12.10",
+    "@babel/preset-env": "^7.12.11",
+    "@babel/preset-typescript": "^7.12.7",
+    "@rollup/plugin-babel": "^5.2.2",
+    "rollup": "^2.36.1",
+    "rollup-plugin-terser": "^7.0.2"
+  }
+}
