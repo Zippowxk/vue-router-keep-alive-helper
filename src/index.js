@@ -1,4 +1,10 @@
-export default function(config) {
+const inBrowser = typeof window !== 'undefined'
+
+if(inBrowser){
+  window.createHelper = createHelper;
+}
+
+export default function createHelper(config) {
 
   if(config.Vue === undefined || config.router === undefined){
     console.warn("warning: router helper needs Vue and root router ,see more for guide : https://github.com/Zippowxk/vue-router-keep-alive-helper")
@@ -26,12 +32,18 @@ export default function(config) {
         initialCb(to);
       } else if (isReplace) {
         replaceCb();
+        console.log("replace")
       } else if (isPush(to)) {
         pushCb();
+        console.log("push")
       } else {
         backCb();
+        console.log("back")
       }
       setCurrentVnodeKey();
+      const current = getCurrentVM();
+      console.log(current.$vnode.parent.componentInstance.cache);
+      console.log(current.$vnode.parent.componentInstance.keys);
     })
   })
 
@@ -75,7 +87,11 @@ export default function(config) {
   }
   const setCurrentVnodeKey = function() {
     const current = getCurrentVM();
-    if (current && current._vnode) { current._vnode.key = Number(current._stack) + router.history.current.path }
+    // console.log(current._vnode)
+    if (current && current._vnode) { 
+      current._vnode.key = Number(current._stack) + router.history.current.path 
+      current._vnode.parent.key = "keep-alive"+ current._vnode.key
+    }
   }
   /** ********  callback functions ************/
   const initialCb = function(to) {
@@ -110,6 +126,8 @@ export default function(config) {
     // in normal , getCurrentVMStack is undefined only happened when push,
     // But when refresh mode, getCurrentVMStack is undefined can also happened when popback
     // In this case , the query.routerStack will be used instand of vm._stack
+
+    return true;
     const toStack = to.query ? to.query.routerStack !== undefined ? to.query.routerStack : 0 : 0;
     return (getCurrentVMStack() === undefined && !canRefresh) || (canRefresh && toStack > pre._stack);
   }
