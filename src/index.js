@@ -1,4 +1,12 @@
-export default function(Vue, router, canRefresh = false) {
+export default function(config) {
+
+  if(config.Vue === undefined || config.router === undefined){
+    console.warn("warning: router helper needs Vue and root router ,see more for guide : https://github.com/Zippowxk/vue-router-keep-alive-helper")
+    return;
+  }
+  const Vue = config.Vue;
+  const router = config.router;
+  const canRefresh = config.canRefresh === undefined ? true : config.canRefresh;
   // When 'canRefresh === true' ,RouterStack will make the stack visible in the query of URL path,
   // Because when a page can refresh , the vm._stack chain is broken.
   // The query.routerStack will be used as place B to keep the stack chain
