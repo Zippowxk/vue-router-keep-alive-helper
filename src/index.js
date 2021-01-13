@@ -12,7 +12,8 @@ export default function createHelper(config) {
   }
   const Vue = config.Vue;
   const router = config.router;
-  const canRefresh = config.canRefresh === undefined ? true : config.canRefresh;
+  const canRefresh = true; //fixed issue#2 https://github.com/Zippowxk/vue-router-keep-alive-helper/issues/2  config.canRefresh === undefined ? true : config.canRefresh;
+  let hacked = false;
   // When 'canRefresh === true' ,RouterStack will make the stack visible in the query of URL path,
   // Because when a page can refresh , the vm._stack chain is broken.
   // The query.routerStack will be used as place B to keep the stack chain
@@ -44,6 +45,9 @@ export default function createHelper(config) {
       const current = getCurrentVM();
       console.log(current.$vnode.parent.componentInstance.cache);
       console.log(current.$vnode.parent.componentInstance.keys);
+      if(!hacked){
+        hackKeepAliveRender(current.$vnode.parent.componentInstance);
+      }
     })
   })
 
@@ -74,8 +78,47 @@ export default function createHelper(config) {
     }
   }
 
+  /*********** hack keep alive render *******************/
+
+  const hackKeepAliveRender = function(vm){
+
+    
+    // modify the first keep alive key and catch
+    replaceFirstKeyAndCache(vm,"keep-alive" + Number(router._stack) + router.history.current.path)
+    
+    const tmp = vm.$options.render
+    vm.$options.render = function(){
+      const slot = this.$slots.default;
+      const vnode = getFirstComponentChild(slot)
+      // TODO: 非refresh mode 下 可能会导致返回时+1
+
+      console.log('====================================!!!');
+      console.log('====================================');
+      console.log(router.history);
+      
+      if(!isDef(vnode.key)){
+        if(isReplace){
+          vnode.key = "keep-alive" + Number(router._stack) + router.history.current.path
+        }else if(isPush(router.history.current)){
+          vnode.key = "keep-alive" + Number(Number(router._stack)+1) + router.history.current.path
+        }else{
+          vnode.key = "keep-alive" + Number(Number(router._stack)-1) + router.history.current.path
+        }
+      }
+
+      console.log(router.history.current.path);
+      console.log(vnode);
+      return tmp.apply(this,arguments)
+    }
+    hacked = true;
+  }
+
   /** ********* router helper ************/
 
+  const getKeepAliveVM = function (){
+    const current = getCurrentVM();
+    return current?current.$vnode.parent.componentInstance:pre?pre.$vnode.parent.componentInstance:undefined;
+  }
   const getCurrentVM = function() {
     return router.history.current.matched.length > 0 ? router.history.current.matched[0].instances.default : undefined;
   }
@@ -89,7 +132,7 @@ export default function createHelper(config) {
     const current = getCurrentVM();
     // console.log(current._vnode)
     if (current && current._vnode) { 
-      current._vnode.key = Number(current._stack) + router.history.current.path 
+      current._vnode.key = Number(router._stack) + router.history.current.path 
       current._vnode.parent.key = "keep-alive"+ current._vnode.key
     }
   }
@@ -127,8 +170,11 @@ export default function createHelper(config) {
     // But when refresh mode, getCurrentVMStack is undefined can also happened when popback
     // In this case , the query.routerStack will be used instand of vm._stack
 
-    return true;
     const toStack = to.query ? to.query.routerStack !== undefined ? to.query.routerStack : 0 : 0;
+
+    const vm = getCurrentVM();
+    console.log(vm);
+    
     return (getCurrentVMStack() === undefined && !canRefresh) || (canRefresh && toStack > pre._stack);
   }
 
@@ -136,6 +182,20 @@ export default function createHelper(config) {
   // add $keepAliveDestroy function to every vm instance instand of $destroy function
   // remove vnode in cache vnodes when destroy a keep-alive instance,
   // just in case reuse previous vm instance of this vnode when push to the same page second time
+  const replaceFirstKeyAndCache = function(vm,key){
+    if(!isDef(vm) || !isDef(vm.cache) || !isDef(vm.keys)){return}
+    const keys = vm.keys;
+    const cache = vm.cache;
+    if(keys.length == 1){
+      const vnode = cache[keys[0]]
+      delete cache[keys[0]]
+      keys.splice(0,1);
+      keys.push(key);
+      cache[key] = vnode;
+    }
+  }
+
+
   const dtmp = Vue.prototype.$destroy;
   const f = function() {
     if (this.$vnode && this.$vnode.data.keepAlive) {
@@ -161,4 +221,22 @@ export default function createHelper(config) {
     dtmp.apply(this, arguments);
   }
   Vue.prototype.$keepAliveDestroy = f;
+
+  // getFirstChild 
+  const getFirstComponentChild = function  (children){
+    if (Array.isArray(children)) {
+      for (let i = 0; i < children.length; i++) {
+        const c = children[i]
+        if (isDef(c) && (isDef(c.componentOptions) || isAsyncPlaceholder(c))) {
+          return c
+        }
+      }
+    }
+  }
+  const isAsyncPlaceholder = function (node){
+    return node.isComment && node.asyncFactory
+  }
+  const isDef = function (v) {
+    return v !== undefined && v !== null
+  }
 }

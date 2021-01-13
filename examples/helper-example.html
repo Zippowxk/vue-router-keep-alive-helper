@@ -4,16 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <script src="https://vuejs.org/js/vue.js"></script>
-    <script src="https://unpkg.com/vue-router@3.4.9/dist/vue-router.js"></script>
+    <script src="../debug/vue.js"></script>
+    <script src="../debug/vue-router.js"></script>
     <script src="../dist/index.js"></script>
 </head>
 <body>
     <div id="app">
         <h1>Hello App!</h1>
         <keep-alive>
-            <router-view :key="$route.query.routerStack"></router-view>
-            <!-- <router-view ></router-view> -->
+            <!-- <router-view :key="$route.query.routerStack"></router-view> -->
+            <router-view ></router-view>
         </keep-alive>
     </div>
     <script>
@@ -37,7 +37,12 @@
         }
         const Baz = { 
             name: 'baz',
-            template: '<div><p>this is baz page</p><router-link to="/foo">Go to Foo</router-link></div>',
+            template: '<div><p>this is baz page</p><div @click="goback">goBack</div><router-link to="/foo">Go to Foo</router-link></div>',
+            methods:{
+                goback(){
+                    this.$router.go(-1);
+                }
+            },
             beforeDestroy() {
                 console.log("baz destroyed")
             },
@@ -52,7 +57,7 @@
         const router = new VueRouter({
             routes 
         })
-        createHelper({Vue,router,canRefresh:true})
+        createHelper({Vue,router})
        
         const app = new Vue({
             router

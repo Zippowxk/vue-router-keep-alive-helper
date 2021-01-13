@@ -23,18 +23,9 @@ Vue Router Keep-alive Helper 是一款SPA应用keep-alive页面自动管理工�
 import createHelper from 'vue-router-keep-alive-helper'
 import Vue from 'vue'
 const router = new VueRouter({routes})
-const canRefresh = true;
-createHelper({Vue, router, canRefresh});
+createHelper({Vue, router});
 ...
 ```
-
-
-
-### 关于配置项 canRefresh
-
-```canRefresh```默认为```true```，此时兼容刷新页面情况，在页面路由时会自动携带一个```query.routerStack```参数，防止刷新页面导致的栈丢失。设置为```false```时，路由的```URL```中将不再携带```routerStack```，但此时刷新页面将可能导致栈异常
-
-
 
 欢迎添加微信 **OmniBug **探讨交流，Email: zippowangxinkai@gmail.com
 
