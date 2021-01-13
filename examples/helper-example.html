@@ -12,8 +12,7 @@
     <div id="app">
         <h1>Hello App!</h1>
         <keep-alive>
-            <!-- <router-view :key="$route.query.routerStack"></router-view> -->
-            <router-view ></router-view>
+            <router-view></router-view>
         </keep-alive>
     </div>
     <script>
@@ -24,14 +23,14 @@
             beforeCreate() {
                 console.log("foo beforeCreate")
             },
-            beforeDestroy() {
+            destroyed() {
                 console.log("foo destroyed")
             },
         }
         const Bar = { 
             name: 'bar',
             template: '<div><p>this is bar page</p><router-link to="/baz">Go to Baz</router-link></div>' ,
-            beforeDestroy() {
+            destroyed() {
                 console.log("bar destroyed")
             },
         }
@@ -40,10 +39,10 @@
             template: '<div><p>this is baz page</p><div @click="goback">goBack</div><router-link to="/foo">Go to Foo</router-link></div>',
             methods:{
                 goback(){
-                    this.$router.go(-1);
+                    this.$router.back();
                 }
             },
-            beforeDestroy() {
+            destroyed() {
                 console.log("baz destroyed")
             },
         }

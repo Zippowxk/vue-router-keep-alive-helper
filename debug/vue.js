@@ -11797,19 +11797,10 @@
     options
   ) {
     var ast = parse(template.trim(), options);
-    console.log('====================================');
-    console.log(ast);
-    console.log('====================================');
     if (options.optimize !== false) {
       optimize(ast, options);
     }
-    console.log('====================================');
-    console.log(ast);
-    console.log('====================================');
     var code = generate(ast, options);
-    console.log('====================================');
-    console.log(code);
-    console.log('====================================');
     return {
       ast: ast,
       render: code.render,

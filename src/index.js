@@ -33,18 +33,13 @@ export default function createHelper(config) {
         initialCb(to);
       } else if (isReplace) {
         replaceCb();
-        console.log("replace")
       } else if (isPush(to)) {
         pushCb();
-        console.log("push")
       } else {
         backCb();
-        console.log("back")
       }
       setCurrentVnodeKey();
       const current = getCurrentVM();
-      console.log(current.$vnode.parent.componentInstance.cache);
-      console.log(current.$vnode.parent.componentInstance.keys);
       if(!hacked){
         hackKeepAliveRender(current.$vnode.parent.componentInstance);
       }
@@ -84,36 +79,31 @@ export default function createHelper(config) {
 
     
     // modify the first keep alive key and catch
-    replaceFirstKeyAndCache(vm,"keep-alive" + Number(router._stack) + router.history.current.path)
+    replaceFirstKeyAndCache(vm,genKey(router._stack))
     
     const tmp = vm.$options.render
     vm.$options.render = function(){
       const slot = this.$slots.default;
       const vnode = getFirstComponentChild(slot)
-      // TODO: 非refresh mode 下 可能会导致返回时+1
-
-      console.log('====================================!!!');
-      console.log('====================================');
-      console.log(router.history);
-      
       if(!isDef(vnode.key)){
         if(isReplace){
-          vnode.key = "keep-alive" + Number(router._stack) + router.history.current.path
+          vnode.key = genKey(router._stack)
         }else if(isPush(router.history.current)){
-          vnode.key = "keep-alive" + Number(Number(router._stack)+1) + router.history.current.path
+          vnode.key = genKey(Number(router._stack)+1)
         }else{
-          vnode.key = "keep-alive" + Number(Number(router._stack)-1) + router.history.current.path
+          vnode.key = genKey(Number(router._stack)-1)
         }
       }
-
-      console.log(router.history.current.path);
-      console.log(vnode);
       return tmp.apply(this,arguments)
     }
     hacked = true;
   }
 
   /** ********* router helper ************/
+
+  const genKey = function(num){
+    return "keep-alive" + Number(num) + router.history.current.path
+  }
 
   const getKeepAliveVM = function (){
     const current = getCurrentVM();
@@ -130,10 +120,9 @@ export default function createHelper(config) {
   }
   const setCurrentVnodeKey = function() {
     const current = getCurrentVM();
-    // console.log(current._vnode)
     if (current && current._vnode) { 
       current._vnode.key = Number(router._stack) + router.history.current.path 
-      current._vnode.parent.key = "keep-alive"+ current._vnode.key
+      current._vnode.parent.key = genKey(router._stack)
     }
   }
   /** ********  callback functions ************/
@@ -170,11 +159,7 @@ export default function createHelper(config) {
     // But when refresh mode, getCurrentVMStack is undefined can also happened when popback
     // In this case , the query.routerStack will be used instand of vm._stack
 
-    const toStack = to.query ? to.query.routerStack !== undefined ? to.query.routerStack : 0 : 0;
-
-    const vm = getCurrentVM();
-    console.log(vm);
-    
+    const toStack = to.query ? to.query.routerStack !== undefined ? to.query.routerStack : 0 : 0;    
     return (getCurrentVMStack() === undefined && !canRefresh) || (canRefresh && toStack > pre._stack);
   }
 
