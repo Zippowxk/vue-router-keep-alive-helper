@@ -114,7 +114,19 @@ export default function createHelper(config) {
       }
       path = pre + path;
     }
+    let query = getQuery(router.history.current.query)
+    path = path+query;
     history.replaceState({id},"",path)
+  }
+  const getQuery = function (params) {
+    let query = ""
+    query = Object.keys(params)
+    .map(key => `${encodeURIComponent(key)}=${encodeURIComponent(params[key])}`)
+    .join('&');
+    if(query.length>0){
+      query = "?"+query;
+    }
+    return query;
   }
   const getCurrentState = function(){
     return history.state
