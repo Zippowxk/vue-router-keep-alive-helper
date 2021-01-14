@@ -27,5 +27,14 @@ createHelper({Vue, router});
 ...
 ```
 
+### 配置
+
+1. replace白名单
+  
+  在tab栏切换时，需要留存某些tab页面，可以在replaceStay中配置这些路径
+```javascript
+  createHelper({Vue, router, replaceStay:["/home","/cart","/mine"]});
+```
+
 欢迎添加微信 **OmniBug **探讨交流，Email: zippowangxinkai@gmail.com
 
