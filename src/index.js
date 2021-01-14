@@ -56,10 +56,14 @@ export default function createHelper(config) {
 
   /** ********  callback functions ************/
   const initialCb = function(to) {
-    
+    console.log("init")
+    if(isDef(getStateId())){
+      router._stack = getStateId();
+    }
   }
   const pushCb = function() {
     router._stack++;
+    console.log("isPush")
     setState(router._stack)
   }
   const backCb = function() {
@@ -116,7 +120,10 @@ export default function createHelper(config) {
     }
     let query = getQuery(router.history.current.query)
     path = path+query;
-    history.replaceState({id},"",path)
+
+    let state = isDef(history.state)?history.state:{};
+    state['id'] = id;
+    history.replaceState(state,"",path)
   }
   const getQuery = function (params) {
     let query = ""
