@@ -86,9 +86,9 @@ export default function createHelper(config) {
 
     const tmp = vm.$options.render
     vm.$options.render = function() {
+      const slot = this.$slots.default;
+      const vnode = getFirstComponentChild(slot) // vnode is a keep-alive-component-vnode
       if (historyShouldChange) {
-        const slot = this.$slots.default;
-        const vnode = getFirstComponentChild(slot) // vnode is a keep-alive-component-vnode
         if (!isDef(vnode.key)) {
           if (isReplace) {
             vnode.key = genKey(router._stack)
@@ -100,8 +100,6 @@ export default function createHelper(config) {
         }
       } else {
         // when historyShouldChange is false should rerender only, should not create new vm ,use the same vnode.key issue#7
-        const slot = this.$slots.default;
-        const vnode = getFirstComponentChild(slot) // vnode is a keep-alive-component-vnode
         vnode.key = genKey(router._stack)
       }
       return tmp.apply(this, arguments)
