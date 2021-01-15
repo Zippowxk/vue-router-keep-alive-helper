@@ -61,6 +61,8 @@ export default function createHelper(config) {
   const initialCb = function(to) {
     if (isDef(getStateId())) {
       router._stack = getStateId();
+    } else {
+      setState(0);
     }
   }
   const pushCb = function() {
