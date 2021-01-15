@@ -3,7 +3,7 @@ const inBrowser = typeof window !== 'undefined'
 if (inBrowser) {
   window.createHelper = createHelper;
 }
-// TODO: 1. abstract mode support 2. destroy bigger id vnode in keep-alive cache
+// TODO: 1. abstract mode support
 export default function createHelper(config) {
   if (config.Vue === undefined || config.router === undefined) {
     console.warn('warning: router helper needs Vue and root router ,see more for guide : https://github.com/Zippowxk/vue-router-keep-alive-helper')
@@ -20,7 +20,7 @@ export default function createHelper(config) {
   let replacePrePath;
   let preStateId = 0;
   let historyShouldChange = false;
-
+  let historyStackMap = {};
   router.beforeEach((to, from, next) => {
     pre = getCurrentVM();
     next();
@@ -64,19 +64,22 @@ export default function createHelper(config) {
     } else {
       setState(0);
     }
+    pushStack(getCurrentVM());
   }
   const pushCb = function() {
     router._stack++;
     setState(router._stack)
+    pushStack(getCurrentVM());
   }
   const backCb = function() {
     router._stack--;
-    pre.$keepAliveDestroy();
+    removeGreater(router._stack);
   }
   const replaceCb = function() {
     if (!(isDef(replacePrePath) && replaceStay.indexOf(replacePrePath) !== -1)) {
       pre.$keepAliveDestroy();
     }
+    pushStack(getCurrentVM());
     isReplace = false;
     replacePrePath = undefined;
   }
@@ -107,6 +110,33 @@ export default function createHelper(config) {
       return tmp.apply(this, arguments)
     }
     hacked = true;
+  }
+
+
+  /*************** stack map helper **************/
+  const pushStack = function(vm){
+    const cur = router._stack;
+    if(historyStackMap.hasOwnProperty(cur) && historyStackMap[cur]){
+      const vms = historyStackMap[cur]
+      vms.push(vm)
+    }else{
+      const vms = []
+      vms.push(vm)
+      historyStackMap[cur] = vms;
+    }
+  }
+  const removeGreater = function(index){
+    if(!isDef(historyStackMap) || historyStackMap.length<=0) {return}
+    Object.keys(historyStackMap).forEach(level => {
+      if (level<=index) {return}
+      const vms = historyStackMap[level];
+      if (!isDef(vms) || vms.length <=0 ){return}
+      let vm = vms.pop();
+      while (isDef(vm)) {
+        vm.$keepAliveDestroy();
+        vm = vms.pop();
+      }
+    });
   }
 
   /** ********* router helper ************/
