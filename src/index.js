@@ -1,24 +1,25 @@
 const inBrowser = typeof window !== 'undefined'
 
-if(inBrowser){
+if (inBrowser) {
   window.createHelper = createHelper;
 }
 // TODO: 1. abstract mode support 2. destroy bigger id vnode in keep-alive cache
 export default function createHelper(config) {
-  if(config.Vue === undefined || config.router === undefined){
-    console.warn("warning: router helper needs Vue and root router ,see more for guide : https://github.com/Zippowxk/vue-router-keep-alive-helper")
+  if (config.Vue === undefined || config.router === undefined) {
+    console.warn('warning: router helper needs Vue and root router ,see more for guide : https://github.com/Zippowxk/vue-router-keep-alive-helper')
     return;
   }
   const Vue = config.Vue;
   const router = config.router;
-  const mode = router.mode; //hash or history  //TODO: abstract
+  const mode = router.mode; // hash or history  //TODO: abstract
   const replaceStay = config.replaceStay || []
   let hacked = false;
   router._stack = 0;
   let pre;
   let isReplace = false;
-  let replacePrePath = undefined;
+  let replacePrePath;
   let preStateId = 0;
+  let historyShouldChange = false;
 
   router.beforeEach((to, from, next) => {
     pre = getCurrentVM();
@@ -26,6 +27,7 @@ export default function createHelper(config) {
   })
 
   router.afterEach((to, from) => {
+    historyShouldChange = true;
     // get the vm instance after render
     Vue.nextTick(() => {
       if (pre === undefined) {
@@ -40,9 +42,10 @@ export default function createHelper(config) {
       preStateId = Number(router._stack);
       setCurrentVnodeKey();
       const current = getCurrentVM();
-      if(!hacked && current){
+      if (!hacked && current) {
         hackKeepAliveRender(current.$vnode.parent.componentInstance);
       }
+      historyShouldChange = false;
     })
   })
 
@@ -56,14 +59,12 @@ export default function createHelper(config) {
 
   /** ********  callback functions ************/
   const initialCb = function(to) {
-    console.log("init")
-    if(isDef(getStateId())){
+    if (isDef(getStateId())) {
       router._stack = getStateId();
     }
   }
   const pushCb = function() {
     router._stack++;
-    console.log("isPush")
     setState(router._stack)
   }
   const backCb = function() {
@@ -71,123 +72,128 @@ export default function createHelper(config) {
     pre.$keepAliveDestroy();
   }
   const replaceCb = function() {
-    if(!(isDef(replacePrePath) && replaceStay.indexOf(replacePrePath) != -1)){
+    if (!(isDef(replacePrePath) && replaceStay.indexOf(replacePrePath) !== -1)) {
       pre.$keepAliveDestroy();
     }
     isReplace = false;
     replacePrePath = undefined;
   }
-  /*********** hack keep alive render *******************/
+  /** ********* hack keep alive render *******************/
 
-  const hackKeepAliveRender = function(vm){    
+  const hackKeepAliveRender = function(vm) {
     // modify the first keep alive key and catch
-    replaceFirstKeyAndCache(vm,genKey(router._stack))
-    
-    const tmp = vm.$options.render 
-    vm.$options.render = function(){
-      const slot = this.$slots.default;
-      const vnode = getFirstComponentChild(slot) //vnode is a keep-alive-component-vnode
-      if(!isDef(vnode.key)){
-        if(isReplace){
-          vnode.key = genKey(router._stack)
-        }else if(isPush()){
-          vnode.key = genKey(Number(router._stack)+1)
-        }else{
-          vnode.key = genKey(Number(router._stack)-1)
+    replaceFirstKeyAndCache(vm, genKey(router._stack))
+
+    const tmp = vm.$options.render
+    vm.$options.render = function() {
+      if (historyShouldChange) {
+        const slot = this.$slots.default;
+        const vnode = getFirstComponentChild(slot) // vnode is a keep-alive-component-vnode
+        if (!isDef(vnode.key)) {
+          if (isReplace) {
+            vnode.key = genKey(router._stack)
+          } else if (isPush()) {
+            vnode.key = genKey(Number(router._stack) + 1)
+          } else {
+            vnode.key = genKey(Number(router._stack) - 1)
+          }
         }
+      } else {
+        // when historyShouldChange is false should rerender only, should not create new vm ,use the same vnode.key issue#7
+        const slot = this.$slots.default;
+        const vnode = getFirstComponentChild(slot) // vnode is a keep-alive-component-vnode
+        vnode.key = genKey(router._stack)
       }
-      return tmp.apply(this,arguments)
+      return tmp.apply(this, arguments)
     }
     hacked = true;
   }
 
   /** ********* router helper ************/
-  const getStateId = function (){
+  const getStateId = function () {
     const state = getCurrentState();
-    return isDef(state)?state.id:undefined
+    return isDef(state) ? state.id : undefined
   }
-  const setState = function(id){
+  const setState = function(id) {
     // optimize file:// URL
-    let path = (mode === "hash"?"#":"")+ router.history.current.path;
-    if(window.location.href.startsWith("file://")){
+    let path = (mode === 'hash' ? '#' : '') + router.history.current.path;
+    if (window.location.href.startsWith('file://')) {
       let pre;
-      if(mode === "hash"){
-        pre = window.location.href.split("#")[0];
-      }else{
-        pre = window.location.href.splice(".html")[0] + '.html';
+      if (mode === 'hash') {
+        pre = window.location.href.split('#')[0];
+      } else {
+        pre = window.location.href.splice('.html')[0] + '.html';
       }
       path = pre + path;
     }
     let query = getQuery(router.history.current.query)
-    path = path+query;
+    path = path + query;
 
-    let state = isDef(history.state)?history.state:{};
+    let state = isDef(history.state) ? history.state : {};
     state['id'] = id;
-    history.replaceState(state,"",path)
+    history.replaceState(state, '', path)
   }
   const getQuery = function (params) {
-    let query = ""
+    let query = ''
     query = Object.keys(params)
-    .map(key => `${encodeURIComponent(key)}=${encodeURIComponent(params[key])}`)
-    .join('&');
-    if(query.length>0){
-      query = "?"+query;
+      .map(key => `${encodeURIComponent(key)}=${encodeURIComponent(params[key])}`)
+      .join('&');
+    if (query.length > 0) {
+      query = '?' + query;
     }
     return query;
   }
-  const getCurrentState = function(){
+  const getCurrentState = function() {
     return history.state
   }
 
   const isPush = function() {
-    if(!isReplace){
+    if (!isReplace) {
       return !isDef(getStateId()) || preStateId < getStateId()
     }
     return false;
   }
 
-  const genKey = function(num){
-    return "keep-alive-vnode-key" + Number(num) + router.history.current.path
+  const genKey = function(num) {
+    return 'keep-alive-vnode-key' + Number(num) + router.history.current.path
   }
-  const genVNodeKey = function(num){
-      return "vnode-key"+ Number(num) + router.history.current.path 
+  const genVNodeKey = function(num) {
+    return 'vnode-key' + Number(num) + router.history.current.path
   }
   const getCurrentVM = function() {
     return router.history.current.matched.length > 0 ? router.history.current.matched[0].instances.default : undefined;
   }
   const setCurrentVnodeKey = function() {
     const current = getCurrentVM();
-    if (current && current._vnode) { 
+    if (current && current._vnode) {
       current._vnode.key = genVNodeKey(router._stack)
       current._vnode.parent.key = genKey(router._stack)
     }
   }
 
-
   /** ******** depend functions ************/
   // add $keepAliveDestroy function to every vm instance instand of $destroy function
   // remove vnode in cache vnodes when destroy a keep-alive instance,
   // just in case reuse previous vm instance of this vnode when push to the same page second time
-  const replaceFirstKeyAndCache = function(vm,key){
-    if(!isDef(vm) || !isDef(vm.cache) || !isDef(vm.keys)){return}
+  const replaceFirstKeyAndCache = function(vm, key) {
+    if (!isDef(vm) || !isDef(vm.cache) || !isDef(vm.keys)) { return }
     const keys = vm.keys;
     const cache = vm.cache;
-    if(keys.length == 1){
+    if (keys.length === 1) {
       const vnode = cache[keys[0]]
       delete cache[keys[0]]
-      keys.splice(0,1);
+      keys.splice(0, 1);
       keys.push(key);
       cache[key] = vnode;
     }
   }
-
 
   const dtmp = Vue.prototype.$destroy;
   const f = function() {
     if (this.$vnode && this.$vnode.data.keepAlive) {
       if (this.$vnode.parent && this.$vnode.parent.componentInstance && this.$vnode.parent.componentInstance.cache) {
         if (this.$vnode.componentOptions) {
-          var key = this.$vnode.key == null
+          var key = !isDef(this.$vnode.key)
             ? this.$vnode.componentOptions.Ctor.cid + (this.$vnode.componentOptions.tag ? `::${this.$vnode.componentOptions.tag}` : '')
             : this.$vnode.key;
           var cache = this.$vnode.parent.componentInstance.cache;
@@ -208,8 +214,8 @@ export default function createHelper(config) {
   }
   Vue.prototype.$keepAliveDestroy = f;
 
-  // getFirstChild 
-  const getFirstComponentChild = function  (children){
+  // getFirstChild
+  const getFirstComponentChild = function (children) {
     if (Array.isArray(children)) {
       for (let i = 0; i < children.length; i++) {
         const c = children[i]
@@ -219,7 +225,7 @@ export default function createHelper(config) {
       }
     }
   }
-  const isAsyncPlaceholder = function (node){
+  const isAsyncPlaceholder = function (node) {
     return node.isComment && node.asyncFactory
   }
   const isDef = function (v) {
