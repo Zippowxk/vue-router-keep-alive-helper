@@ -39,8 +39,8 @@ createHelper({Vue, router});
 
 ### Sample code
 
-[静态文件引入](./examples/)
-[工程化代码](https://github.com/Zippowxk/vue-router-helper-demo)
+1. [静态文件引入](./examples/)
+2. [工程化代码](https://github.com/Zippowxk/vue-router-helper-demo)
 
 欢迎添加微信 **OmniBug **探讨交流，Email: zippowangxinkai@gmail.com
 

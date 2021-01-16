@@ -1,6 +1,6 @@
 {
   "name": "vue-router-keep-alive-helper",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "description": "Auto destroy keepAlive components when go back",
   "main": "dist/index.js",
   "scripts": {
@@ -10,7 +10,7 @@
     "type": "git",
     "url": "git+https://github.com/Zippowxk/vue-router-keep-alive-helper.git"
   },
-  "keywords": [],
+  "keywords": ["vue.js","vue","vue-router","router","keep-alive","router-stack","router-manager","keep-alive-manager","stack-router"],
   "author": "",
   "license": "ISC",
   "bugs": {

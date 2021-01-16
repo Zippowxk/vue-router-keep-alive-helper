@@ -11,7 +11,7 @@ export default function createHelper(config) {
   }
   const Vue = config.Vue;
   const router = config.router;
-  const mode = router.mode; // hash or history  //TODO: abstract
+  const mode = router.mode; // hash or history 
   const replaceStay = config.replaceStay || []
   let hacked = false;
   router._stack = 0;
