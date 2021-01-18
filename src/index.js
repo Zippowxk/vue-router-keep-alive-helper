@@ -74,6 +74,7 @@ export default function createHelper(config) {
   const backCb = function() {
     router._stack--;
     removeGreater(router._stack);
+    pushStack(getCurrentVM());
   }
   const replaceCb = function() {
     if (!(isDef(replacePrePath) && replaceStay.indexOf(replacePrePath) !== -1)) {
