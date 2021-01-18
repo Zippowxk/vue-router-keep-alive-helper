@@ -51,10 +51,24 @@ export default function createHelper(config) {
 
   // hack router.replace function
   const rtmp = router.replace;
-  router.replace = function(arg, complete, abort) {
+  router.replace = function(location, onComplete, onAbort) {
     isReplace = true;
     replacePrePath = router.history.current.path;
-    rtmp.apply(router, [arguments[0]]);
+    if (!onComplete && !onAbort && typeof Promise !== 'undefined') {
+      return new Promise(function (resolve, reject) {
+        rtmp.call(router,location).then(()=>resolve()).catch(e=>{
+          isReplace = false;
+          replacePrePath = undefined;
+          reject(e);
+        });
+      })
+    } else {
+      rtmp.call(router,location, onComplete, (e)=>{
+        isReplace = false;
+        replacePrePath = undefined;
+        isDef(onAbort) && onAbort(e);
+      })
+    }
   }
 
   /** ********  callback functions ************/
