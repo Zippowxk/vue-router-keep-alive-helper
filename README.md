@@ -1,16 +1,33 @@
 # vue-router-keep-alive-helper
-Vue Router Keep-alive Helper 是一款SPA应用keep-alive页面自动管理工具，仅需一行配置代码即可使用。
+`Vue Router Keep-alive Helper` is an automatic tool for managing cache pages in the `Vue.js` project, only one line of configuration code can be used.
 
-### 诞生背景：
-在使用```Vuejs```搭配```VueRouter```开发单页面应用时，经常使用keep-alive缓存浏览过的页面来提升用户体验，在原生App中，应用程序会维护一个页面栈， 页面从A=>B=>C时，保留A B C三个页面，在返回页面B时，销毁页面C是一个常规操作，但是在前端Web开发时，keep-alive的页面管理变得不那么容易，我们需要在返回时手动销毁页面。
+English | [简体中文](./README_CN.md)
 
-### 可解决的问题：
-支持把所有页面设置为keep-alive,并且在浏览器返回或者触发```router.back```方法时自动销毁栈顶keep-alive页面，完全模拟原生App的页面管理方案
+### Why you need this helper：
 
-### 使用方式
+When developing a SPA project of `Vue.js` with `vue-router`, `<keep-alive>` is always used to cach pages which already be routed,there are three options to manage the cache tree inside it,
+```
+include - Only components with matching names will be cached.
+exclude - Any component with a matching name will not be cached.
+max - The maximum number of component instances to cache.
+```
+But these options are only useful in simple situations, otherwise they're useless,such as:
+
+1. destroy current page cache when routing back.
+2. cache more than one instances which using same component,and destroy one of them specifically.
+
+### Features
+
+1. recognize `pushing` `going back` or `replacing` automatically
+2. destroy current page cache when routing back
+3. always create and cache a new instance,even if this component is already cached
+4. keep the same status after brower refreshing
+5. `replaceStay` white list allows cache pages when replacing
+
+### Usage
 
 1. ```npm i -s vue-router-keep-alive-helper```
-2. 将所有页面设置为keep-alive
+2. keep alive the `router-view`
 ```html
 ...
 <keep-alive>
@@ -18,7 +35,7 @@ Vue Router Keep-alive Helper 是一款SPA应用keep-alive页面自动管理工�
 </keep-alive>
 ...
 ```
-3. 在vue-router初始化时 添加helper
+3. create helper after router is created
 ```javascript
 import createHelper from 'vue-router-keep-alive-helper'
 import Vue from 'vue'
@@ -27,11 +44,12 @@ createHelper({Vue, router});
 ...
 ```
 
-### 配置
+### Config
 
-1. replace白名单
+1. replace white list
   
-  在tab栏切换时，需要留存某些tab页面，可以在replaceStay中配置这些路径
+  
+  When switching the tab bar, some tab pages need to be cached，you can set the paths in replaceStay option
 ```javascript
   createHelper({Vue, router, replaceStay:["/home","/cart","/mine"]});
 ```
@@ -39,8 +57,8 @@ createHelper({Vue, router});
 
 ### Sample code
 
-1. [静态文件引入](./examples/)
-2. [工程化代码](https://github.com/Zippowxk/vue-router-helper-demo)
+1. [static file](./examples/)
+2. [webpack](https://github.com/Zippowxk/vue-router-helper-demo)
 
-欢迎添加微信 **OmniBug **探讨交流，Email: zippowangxinkai@gmail.com
+Twitter **zippowxk**，Email: zippowangxinkai@gmail.com
 
