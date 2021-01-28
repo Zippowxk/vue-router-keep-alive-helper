@@ -5,7 +5,7 @@ English | [简体中文](./README_CN.md)
 
 ### Why you need this helper：
 
-When developing a SPA project of `Vue.js` with `vue-router`, `<keep-alive>` is always used to cach pages which already be routed,there are three options to manage the cache tree inside it,
+When developing a SPA project of `Vue.js` with `vue-router`, `<keep-alive>` is always used to cach pages which are already routed,there are three options to manage the cache tree inside it,
 ```
 include - Only components with matching names will be cached.
 exclude - Any component with a matching name will not be cached.
@@ -18,10 +18,10 @@ But these options are only useful in simple situations, otherwise they're useles
 
 ### Features
 
-1. recognize `pushing` `going back` or `replacing` automatically
-2. destroy current page cache when routing back
-3. always create and cache a new instance,even if this component is already cached
-4. keep the same status after brower refreshing
+1. Recognize `pushing` `going back` or `replacing` automatically
+2. Destroy current page cache when routing back
+3. Always create and cache a new instance,even if this component is already cached
+4. Keep the same status after browser refreshing
 5. `replaceStay` white list allows cache pages when replacing
 
 ### Usage
