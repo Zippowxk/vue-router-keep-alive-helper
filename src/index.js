@@ -94,6 +94,7 @@ export default function createHelper(config) {
     if (!(isDef(replacePrePath) && replaceStay.indexOf(replacePrePath) !== -1)) {
       pre.$keepAliveDestroy();
     }
+    setState(router._stack)
     pushStack(getCurrentVM());
     isReplace = false;
     replacePrePath = undefined;
