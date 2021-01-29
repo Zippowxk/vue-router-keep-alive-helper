@@ -220,7 +220,7 @@ export default function createHelper(config) {
   /********************hack history replaceState function*******************/
   const rstmp = history.replaceState;
   history.replaceState = function(state, op, path) {
-    let s = Object.assign(history.state, state)
+    let s = Object.assign(history.state | {}, state)
     rstmp.call(history, s, op, path)
   }
 
