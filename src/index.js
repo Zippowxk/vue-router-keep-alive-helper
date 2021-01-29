@@ -5,6 +5,9 @@ if (inBrowser) {
 }
 // TODO: 1. abstract mode support
 export default function createHelper(config) {
+  const isDef = function (v) {
+    return v !== undefined && v !== null
+  }
   if (config.Vue === undefined || config.router === undefined) {
     console.warn('warning: router helper needs Vue and root router ,see more for guide : https://github.com/Zippowxk/vue-router-keep-alive-helper')
     return;
@@ -21,6 +24,7 @@ export default function createHelper(config) {
   let preStateId = 0;
   let historyShouldChange = false;
   let historyStackMap = {};
+  const publicPath = isDef(config.publicPath) ? config.publicPath : '';
   router.beforeEach((to, from, next) => {
     pre = getCurrentVM();
     next();
@@ -162,7 +166,7 @@ export default function createHelper(config) {
   }
   const setState = function(id) {
     // optimize file:// URL
-    let path = (mode === 'hash' ? '#' : '') + router.history.current.path;
+    let path = (mode === 'hash' ? '#' : '') + publicPath + router.history.current.path;
     if (window.location.href.startsWith('file://')) {
       let pre;
       if (mode === 'hash') {
@@ -280,8 +284,5 @@ export default function createHelper(config) {
   }
   const isAsyncPlaceholder = function (node) {
     return node.isComment && node.asyncFactory
-  }
-  const isDef = function (v) {
-    return v !== undefined && v !== null
   }
 }
