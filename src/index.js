@@ -217,6 +217,13 @@ export default function createHelper(config) {
     }
   }
 
+  /********************hack history replaceState function*******************/
+  const rstmp = history.replaceState;
+  history.replaceState = function(state, op, path) {
+    let s = Object.assign(history.state, state)
+    rstmp.call(history, s, op, path)
+  }
+
   /** ******** depend functions ************/
   // add $keepAliveDestroy function to every vm instance instand of $destroy function
   // remove vnode in cache vnodes when destroy a keep-alive instance,
