@@ -24,7 +24,6 @@ export default function createHelper(config) {
   let preStateId = 0;
   let historyShouldChange = false;
   let historyStackMap = {};
-  const publicPath = isDef(config.publicPath) ? config.publicPath : '';
   router.beforeEach((to, from, next) => {
     pre = getCurrentVM();
     next();
@@ -165,7 +164,7 @@ export default function createHelper(config) {
   }
   const setState = function(id) {
     // optimize file:// URL
-    let path = (mode === 'hash' ? '#' : '') + publicPath + router.history.current.path;
+    let path = window.location.pathname + mode === 'hash' ? window.location.hash : '';
     if (window.location.href.startsWith('file://')) {
       let pre;
       if (mode === 'hash') {
