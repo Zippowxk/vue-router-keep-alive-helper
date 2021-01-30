@@ -204,16 +204,16 @@ export default function createHelper(config) {
   const genKey = function(num) {
     return 'keep-alive-vnode-key' + Number(num) + router.history.current.path
   }
-  const genVNodeKey = function(num) {
-    return 'vnode-key' + Number(num) + router.history.current.path
-  }
+  // const genVNodeKey = function(num) {
+  //   return 'vnode-key' + Number(num) + router.history.current.path
+  // }
   const getCurrentVM = function() {
     return router.history.current.matched.length > 0 ? router.history.current.matched[0].instances.default : undefined;
   }
   const setCurrentVnodeKey = function() {
     const current = getCurrentVM();
     if (current && current._vnode) {
-      current._vnode.key = genVNodeKey(router._stack)
+      // current._vnode.key = genVNodeKey(router._stack)
       current._vnode.parent.key = genKey(router._stack)
     }
   }
