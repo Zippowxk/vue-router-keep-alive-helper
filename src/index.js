@@ -14,7 +14,7 @@ export default function createHelper(config) {
   }
   const Vue = config.Vue;
   const router = config.router;
-  const mode = router.mode; // hash or history 
+  const mode = router.mode; // hash or history
   const replaceStay = config.replaceStay || []
   let hacked = false;
   router._stack = 0;
@@ -60,14 +60,14 @@ export default function createHelper(config) {
     replacePrePath = router.history.current.path;
     if (!onComplete && !onAbort && typeof Promise !== 'undefined') {
       return new Promise(function (resolve, reject) {
-        rtmp.call(router,location).then(()=>resolve()).catch(e=>{
+        rtmp.call(router, location).then(() => resolve()).catch(e => {
           isReplace = false;
           replacePrePath = undefined;
           reject(e);
         });
       })
     } else {
-      rtmp.call(router,location, onComplete, (e)=>{
+      rtmp.call(router, location, onComplete, (e) => {
         isReplace = false;
         replacePrePath = undefined;
         isDef(onAbort) && onAbort(e);
@@ -132,25 +132,24 @@ export default function createHelper(config) {
     hacked = true;
   }
 
-
-  /*************** stack map helper **************/
-  const pushStack = function(vm){
+  /** ************* stack map helper **************/
+  const pushStack = function(vm) {
     const cur = router._stack;
-    if(historyStackMap.hasOwnProperty(cur) && historyStackMap[cur]){
+    if (historyStackMap.hasOwnProperty(cur) && historyStackMap[cur]) {
       const vms = historyStackMap[cur]
       vms.push(vm)
-    }else{
+    } else {
       const vms = []
       vms.push(vm)
       historyStackMap[cur] = vms;
     }
   }
-  const removeGreater = function(index){
-    if(!isDef(historyStackMap) || historyStackMap.length<=0) {return}
+  const removeGreater = function(index) {
+    if (!isDef(historyStackMap) || historyStackMap.length <= 0) { return }
     Object.keys(historyStackMap).forEach(level => {
-      if (level<=index) {return}
+      if (level <= index) { return }
       const vms = historyStackMap[level];
-      if (!isDef(vms) || vms.length <=0 ){return}
+      if (!isDef(vms) || vms.length <= 0) { return }
       let vm = vms.pop();
       while (isDef(vm)) {
         vm.$keepAliveDestroy();
@@ -178,7 +177,6 @@ export default function createHelper(config) {
     }
     let query = getQuery(router.history.current.query)
     path = path + query;
-
     let state = isDef(history.state) ? history.state : {};
     state['id'] = id;
     history.replaceState(state, '', path)
@@ -221,13 +219,13 @@ export default function createHelper(config) {
     }
   }
 
-  /********************hack history replaceState function*******************/
+  /** ******************hack history replaceState function*******************/
   const rstmp = history.replaceState;
   history.replaceState = function(state, op, path) {
-    let s = Object.assign(history.state | {}, state)
+    const old = Object.assign({}, history.state)
+    const s = Object.assign(old, state)
     rstmp.call(history, s, op, path)
   }
-
   /** ******** depend functions ************/
   // add $keepAliveDestroy function to every vm instance instand of $destroy function
   // remove vnode in cache vnodes when destroy a keep-alive instance,
