@@ -51,29 +51,6 @@ export default function createHelper(config) {
       historyShouldChange = false;
     })
   })
-
-  // hack router.replace function
-  const rtmp = router.replace;
-  router.replace = function(location, onComplete, onAbort) {
-    isReplace = true;
-    replacePrePath = router.history.current.path;
-    if (!onComplete && !onAbort && typeof Promise !== 'undefined') {
-      return new Promise(function (resolve, reject) {
-        rtmp.call(router, location).then(() => resolve()).catch(e => {
-          isReplace = false;
-          replacePrePath = undefined;
-          reject(e);
-        });
-      })
-    } else {
-      rtmp.call(router, location, onComplete, (e) => {
-        isReplace = false;
-        replacePrePath = undefined;
-        isDef(onAbort) && onAbort(e);
-      })
-    }
-  }
-
   /** ********  callback functions ************/
   const initialCb = function(to) {
     if (isDef(getStateId())) {
@@ -224,6 +201,42 @@ export default function createHelper(config) {
     const old = Object.assign({}, history.state)
     const s = Object.assign(old, state)
     rstmp.call(history, s, op, path)
+  }
+  /************************* hack router.replace function ************/
+  const rtmp = router.replace;
+  router.replace = function(location, onComplete, onAbort) {
+    isReplace = true;
+    replacePrePath = router.history.current.path;
+    if (!onComplete && !onAbort && typeof Promise !== 'undefined') {
+      return new Promise(function (resolve, reject) {
+        rtmp.call(router, location).then(() => resolve()).catch(e => {
+          isReplace = false;
+          replacePrePath = undefined;
+          reject(e);
+        });
+      })
+    } else {
+      rtmp.call(router, location, onComplete, (e) => {
+        isReplace = false;
+        replacePrePath = undefined;
+        isDef(onAbort) && onAbort(e);
+      })
+    }
+  }
+  /** ******************hack router go and push functions*******************/
+  const gstmp = router.go;
+  router.go = function(number) {
+    isReplace = false;
+    return gstmp.call(router, number)
+  }
+  const pstmp = router.push;
+  router.push = function(location, onComplete, onAbort) {
+    isReplace = false;
+    if (!onComplete && !onAbort && typeof Promise !== 'undefined') {
+      return pstmp.call(router, location, onComplete, onAbort)
+    } else {
+      pstmp.call(router, location, onComplete, onAbort)
+    }
   }
   /** ******** depend functions ************/
   // add $keepAliveDestroy function to every vm instance instand of $destroy function
