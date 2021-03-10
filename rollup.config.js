@@ -6,7 +6,7 @@ import { terser } from 'rollup-plugin-terser';
 export default {
   input: 'src/index.js',  // 入口文件
   output: {
-    name: 'routerHelper', // umd 模式必须要有 name  此属性作为全局变量访问打包结果
+    name: 'createHelper', // umd 模式必须要有 name  此属性作为全局变量访问打包结果
     file: `dist/index.js`,
     format: 'umd',
     sourcemap: true,
