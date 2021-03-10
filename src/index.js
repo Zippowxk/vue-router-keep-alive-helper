@@ -37,7 +37,7 @@ export default function createHelper(config) {
     __placeholder: true,
   };
   const resolvePushedVm = (currentVm) => {
-    return !currentVm?.$vnode.data.keepAlive ? PLACEHOLDER_VM : currentVm;
+    return !currentVm.$vnode.data.keepAlive ? PLACEHOLDER_VM : currentVm;
   };
   const isPlaceHolderVm = (vm) => !!vm.__placeholder;
 
@@ -49,13 +49,13 @@ export default function createHelper(config) {
       const pendingToPushVm = resolvePushedVm(current);
 
       if (pre === null) {
-        initialCb();
+        initialCb(pendingToPushVm);
       } else if (isReplace) {
         replaceCb(pendingToPushVm);
       } else if (isPush()) {
         pushCb(pendingToPushVm);
       } else {
-        backCb();
+        backCb(pendingToPushVm);
       }
 
       pre = current;
@@ -70,7 +70,7 @@ export default function createHelper(config) {
     });
   });
   /** ********  callback functions ************/
-  const initialCb = function () {
+  const initialCb = function (vm) {
     const currentStateId = getStateId();
 
     if (isDef(currentStateId)) {
@@ -79,15 +79,18 @@ export default function createHelper(config) {
       setState(0);
     }
 
-    pushStack(getCurrentVM());
+    pushStack(vm);
   };
   const pushCb = function (vm) {
     setState(increaseStackPointer());
     pushStack(vm);
   };
-  const backCb = function () {
-    (historyStackMap.pop() || []).forEach((vm) => vm && vm.$keepAliveDestroy());
+  const backCb = function (vm) {
+    (historyStackMap.pop() || []).forEach(
+      (vm) => vm && vm.$keepAliveDestroy && vm.$keepAliveDestroy()
+    );
     decreaseStackPointer();
+    pushStack(vm);
   };
   const replaceCb = function (vm) {
     if (
@@ -134,8 +137,8 @@ export default function createHelper(config) {
     const cur = stackPointer();
     const stack = historyStackMap[cur];
     if (Array.isArray(stack)) {
-      !stack.includes(vm) ? stack.push(vm) : null;
-      historyStackMap[cur] = stack.filter((item) => !item?._isDestroyed);
+      !stack.includes(vm) && stack.push(vm);
+      historyStackMap[cur] = stack.filter((item) => !item._isDestroyed);
     } else {
       const vms = [];
       vms.push(vm);
