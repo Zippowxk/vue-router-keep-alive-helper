@@ -75,6 +75,7 @@ createHelper({Vue, router});
 <table>
   <tr>
     <td align="center"><a href="https://github.com/Zippowxk"><img src="https://avatars.githubusercontent.com/u/5326755?v=4?s=100" width="100px;" alt=""/><br /><sub><b>wangxinkai</b></sub></a><br /><a href="https://github.com/Zippowxk/vue-router-keep-alive-helper/commits?author=Zippowxk" title="Code">💻</a> <a href="https://github.com/Zippowxk/vue-router-keep-alive-helper/commits?author=Zippowxk" title="Documentation">📖</a></td>
+    <td align="center"><a href="https://github.com/kamilic"><img src="https://avatars.githubusercontent.com/u/8327041?v=4?s=100" width="100px;" alt=""/><br /><sub><b>kamilic</b></sub></a><br /><a href="https://github.com/Zippowxk/vue-router-keep-alive-helper/commits?author=kamilic" title="Code">💻</a> <a href="#ideas-kamilic" title="Ideas, Planning, & Feedback">🤔</a></td>
   </tr>
 </table>
 
