@@ -23,7 +23,6 @@ But these options are only useful in simple situations, otherwise they're useles
 3. Always create and cache a new instance,even if this component is already cached
 4. Keep the same status after browser refreshing
 5. `replaceStay` white list allows cache pages when replacing
-
 ### Usage
 
 1. ```npm i -s vue-router-keep-alive-helper```
@@ -54,6 +53,15 @@ createHelper({Vue, router});
   createHelper({Vue, router, replaceStay:["/home","/cart","/mine"]});
 ```
 
+### release log
+#### v0.0.21
+1. support un-full keep-alive routes
+2. add build script
+
+### TODO:
+1. `beforeRouteUpdate` hook warning to users
+2. Vue.js 3 support
+3. unit testing support
 
 ### Sample code
 
