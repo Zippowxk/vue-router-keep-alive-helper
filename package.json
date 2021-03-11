@@ -3,6 +3,7 @@
   "version": "0.0.21",
   "description": "Auto destroy keepAlive components when go back",
   "main": "dist/index.js",
+  "module": "dist/helper.esm.js",
   "scripts": {
     "build": "rollup -c rollup.config.js",
     "contributors:add": "all-contributors add",
@@ -34,7 +35,7 @@
     "@babel/plugin-transform-runtime": "^7.12.10",
     "@babel/preset-env": "^7.12.11",
     "@babel/preset-typescript": "^7.12.7",
-    "@rollup/plugin-babel": "^5.2.2",
+    "@rollup/plugin-babel": "^5.3.0",
     "all-contributors-cli": "^6.20.0",
     "rollup": "^2.36.1",
     "rollup-plugin-terser": "^7.0.2"
