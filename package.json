@@ -4,7 +4,9 @@
   "description": "Auto destroy keepAlive components when go back",
   "main": "dist/index.js",
   "scripts": {
-    "build": "rollup -c rollup.config.js"
+    "build": "rollup -c rollup.config.js",
+    "contributors:add": "all-contributors add",
+    "contributors:generate": "all-contributors generate"
   },
   "repository": {
     "type": "git",
