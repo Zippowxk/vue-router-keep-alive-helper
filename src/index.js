@@ -2,6 +2,7 @@ import Helper from "./helper";
 import { extendVue, extendHistory } from "./extension";
 import { inBrowser } from "./utils";
 
+let singleton = undefined;
 // TODO: 1. abstract mode support
 export default function createHelper(config) {
   if (config.Vue === undefined || config.router === undefined) {
@@ -10,9 +11,12 @@ export default function createHelper(config) {
     );
     return;
   }
+  if(singleton) {
+    return singleton;
+  }
   if (inBrowser) {
     extendHistory(window.history);
   }
   extendVue(config.Vue);
-  return new Helper(config);
+  return (singleton = new Helper(config));
 }
