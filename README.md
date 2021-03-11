@@ -56,7 +56,7 @@ createHelper({Vue, router});
   createHelper({Vue, router, replaceStay:["/home","/cart","/mine"]});
 ```
 
-### release log
+### Release log
 #### v0.0.21
 1. support un-full keep-alive routes
 2. add build script
