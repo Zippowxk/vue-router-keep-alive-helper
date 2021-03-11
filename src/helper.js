@@ -13,19 +13,6 @@ import {
 import HistoryStack from "./historyStack";
 
 export default class VueRouterKeepAliveHelper{
-  get currentVm() {
-    return getCurrentVM(this.router);
-  }
-  get isPush() {
-    if (!this.isReplace) {
-      const stateId = getStateId();
-      return !isDef(stateId) || this.preStateId <= stateId;
-    }
-    return false;
-  }
-  get stackPointer() {
-    return this.router._stack;
-  }
   constructor({ Vue, router, replaceStay }) {
     this.Vue = Vue;
     this.router = router;
@@ -122,7 +109,7 @@ export default class VueRouterKeepAliveHelper{
    * @param {*} vm keep-alive component instance
    */
   hackKeepAliveRender(vm) {
-    // modify the first keep alive key and catch
+    // modify the first keep alive key and cache
     replaceFirstKeyAndCache(vm, genKey(this.stackPointer, this.router));
 
     const tmp = vm.$options.render;
@@ -180,6 +167,19 @@ export default class VueRouterKeepAliveHelper{
     this.historyStack.push(vm, this.stackPointer);
     this.isReplace = false;
     this.replacePrePath = undefined;
+  }
+  get currentVm() {
+    return getCurrentVM(this.router);
+  }
+  get isPush() {
+    if (!this.isReplace) {
+      const stateId = getStateId();
+      return !isDef(stateId) || this.preStateId <= stateId;
+    }
+    return false;
+  }
+  get stackPointer() {
+    return this.router._stack;
   }
   setState(id) {
     this.setStackPointer(id);
