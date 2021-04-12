@@ -79,7 +79,9 @@ export const replaceState = function (mode, router, id) {
   let path =
     window.location.pathname + (mode === "hash" ? window.location.hash : "");
   let query = getQuery(router.history.current.query);
-  path = path + query;
+  if (mode !== "hash") { //fixed issue#18: in hash mode issue
+    path = path + query;
+  }
   let state = isDef(history.state) ? history.state : {};
   state["id"] = id;
   // optimize file:// URL
