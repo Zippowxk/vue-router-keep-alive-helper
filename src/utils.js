@@ -76,12 +76,8 @@ const isAsyncPlaceholder = function (node) {
 };
 
 export const replaceState = function (mode, router, id) {
-  let path =
-    window.location.pathname + (mode === "hash" ? window.location.hash : "");
-  let query = getQuery(router.history.current.query);
-  if (mode !== "hash") { //fixed issue#18: in hash mode issue
-    path = path + query;
-  }
+  const { pathname, search, hash } = window.location;
+  let path = `${pathname}${search}${hash}`;
   let state = isDef(history.state) ? history.state : {};
   state["id"] = id;
   // optimize file:// URL
@@ -89,4 +85,4 @@ export const replaceState = function (mode, router, id) {
   history.replaceState(state, "", isFilSys ? null : path);
 };
 
-export const inBrowser = typeof window !== 'undefined';
+export const inBrowser = typeof window !== "undefined";
