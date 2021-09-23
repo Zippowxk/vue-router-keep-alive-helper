@@ -5,10 +5,7 @@ const PLACEHOLDER_VM = {
   __placeholder: true,
 };
 export const resolvePushedVm = (currentVm) => {
-  if (!isDef(currentVm)) {
-    return undefined;
-  }
-  return !currentVm.$vnode.data.keepAlive ? PLACEHOLDER_VM : currentVm;
+  return (isDef(currentVm) && currentVm.$vnode.data.keepAlive) ? currentVm : PLACEHOLDER_VM;
 };
 export const isPlaceHolderVm = (vm) => vm && !!vm.__placeholder;
 
