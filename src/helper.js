@@ -161,7 +161,7 @@ export default class VueRouterKeepAliveHelper{
       this.replaceStay.includes(this.replacePrePath)
     );
     if (shouldDestroy) {
-      this.pre.$keepAliveDestroy();
+      this.pre?.$keepAliveDestroy();
     }
     this.setState(this.stackPointer);
     this.historyStack.push(vm, this.stackPointer);
