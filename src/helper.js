@@ -52,6 +52,7 @@ export default class VueRouterKeepAliveHelper{
         } else {
           this.onBack(pendingToPushVm);
         }
+        // console.log(current)
         this.pre = current;
         this.preStateId = this.stackPointer;
         if (!isPlaceHolderVm(pendingToPushVm)) {
@@ -151,7 +152,7 @@ export default class VueRouterKeepAliveHelper{
     this.historyStack.push(vm, this.stackPointer);
   }
   onBack(vm) {
-    this.historyStack.pop();
+    this.historyStack.pop(vm);
     this.decreaseStackPointer();
     this.historyStack.push(vm, this.stackPointer);
   }
@@ -161,7 +162,8 @@ export default class VueRouterKeepAliveHelper{
       this.replaceStay.includes(this.replacePrePath)
     );
     if (shouldDestroy) {
-      this.pre?.$keepAliveDestroy?.();
+      this.pre?.$keepAliveDestroy?.(vm);
+      this.pre = null;
     }
     this.setState(this.stackPointer);
     this.historyStack.push(vm, this.stackPointer);

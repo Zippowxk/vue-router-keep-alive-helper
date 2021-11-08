@@ -14,11 +14,11 @@ export default class HistoryStack {
       this.historyStackMap[index] = vms;
     }
   }
-  pop() {
+  pop(vmCurrent) {
     const last = this.historyStackMap.pop();
     Array.isArray(last) &&
       last.forEach(
-        (vm) => vm && vm.$keepAliveDestroy && vm.$keepAliveDestroy()
+        (vm) => vm && vm.$keepAliveDestroy && vm.$keepAliveDestroy(vmCurrent)
       );
   }
   removeGreater(index) {
