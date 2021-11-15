@@ -46,12 +46,12 @@ export function extendVue(Vue) {
             cache[key] = null;
             // fix memory leaks
             if (
-              this.$vnode.parent.componentOptions.children &&
+              this.$vnode.parent && this.$vnode.parent.componentOptions && this.$vnode.parent.componentOptions.children &&
               Array.isArray(this.$vnode.parent.componentOptions.children)
             ) {
               this.$vnode.parent.componentOptions.children.length = 0
             }
-            if (cache[vmCurrent.$vnode.key]){
+            if (cache[vmCurrent.$vnode.key] && cache[vmCurrent.$vnode.key].parent && cache[vmCurrent.$vnode.key].parent.componentOptions){
               cache[vmCurrent.$vnode.key].parent.componentOptions.children = [cache[vmCurrent.$vnode.key]]
               cache[vmCurrent.$vnode.key].parent.elm = cache[vmCurrent.$vnode.key].parent.componentInstance.$el
             }
