@@ -1,6 +1,6 @@
 {
   "name": "vue-router-keep-alive-helper",
-  "version": "0.0.24",
+  "version": "0.0.25",
   "description": "Auto destroy keepAlive components when go back",
   "main": "dist/index.js",
   "module": "dist/helper.esm.js",
