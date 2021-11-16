@@ -15,12 +15,12 @@ export const getStateId = function () {
 };
 
 export const getQuery = function (params) {
-  let query = "";
+  let query = '';
   query = Object.keys(params)
     .map(
       (key) => `${encodeURIComponent(key)}=${encodeURIComponent(params[key])}`
     )
-    .join("&");
+    .join('&');
   if (query.length > 0) {
     query = `?${query}`;
   }
@@ -76,10 +76,10 @@ export const replaceState = function (mode, router, id) {
   const { pathname, search, hash } = window.location;
   let path = `${pathname}${search}${hash}`;
   let state = isDef(history.state) ? history.state : {};
-  state["id"] = id;
+  state['id'] = id;
   // optimize file:// URL
-  const isFilSys = window.location.href.startsWith("file://");
-  history.replaceState(state, "", isFilSys ? null : path);
+  const isFilSys = window.location.href.startsWith('file://');
+  history.replaceState(state, '', isFilSys ? null : path);
 };
 
-export const inBrowser = typeof window !== "undefined";
+export const inBrowser = typeof window !== 'undefined';

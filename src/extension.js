@@ -1,4 +1,4 @@
-import { isDef } from "./utils";
+import { isDef } from './utils';
 
 export function extendHistory(history) {
   const rstmp = history.replaceState;
@@ -32,7 +32,7 @@ export function extendVue(Vue) {
             ? this.$vnode.componentOptions.Ctor.cid +
               (this.$vnode.componentOptions.tag
                 ? `::${this.$vnode.componentOptions.tag}`
-                : "")
+                : '')
             : this.$vnode.key;
           const cache = this.$vnode.parent.componentInstance.cache;
           const keys = this.$vnode.parent.componentInstance.keys;
@@ -51,7 +51,7 @@ export function extendVue(Vue) {
             ) {
               this.$vnode.parent.componentOptions.children.length = 0
             }
-            if (cache[vmCurrent.$vnode.key] && cache[vmCurrent.$vnode.key].parent && cache[vmCurrent.$vnode.key].parent.componentOptions){
+            if (cache[vmCurrent.$vnode.key] && cache[vmCurrent.$vnode.key].parent && cache[vmCurrent.$vnode.key].parent.componentOptions) {
               cache[vmCurrent.$vnode.key].parent.componentOptions.children = [cache[vmCurrent.$vnode.key]]
               cache[vmCurrent.$vnode.key].parent.elm = cache[vmCurrent.$vnode.key].parent.componentInstance.$el
             }
@@ -69,5 +69,46 @@ export function extendVue(Vue) {
       }
     }
     dtmp.apply(this, arguments);
+  };
+  Vue.prototype.$clearParent = function (vmCurrent) {
+    if (this.$vnode && this.$vnode.data.keepAlive) {
+      if (
+        this.$vnode.parent &&
+        this.$vnode.parent.componentInstance &&
+        this.$vnode.parent.componentInstance.cache
+      ) {
+        if (this.$vnode.componentOptions) {
+          const key = !isDef(this.$vnode.key)
+            ? this.$vnode.componentOptions.Ctor.cid +
+              (this.$vnode.componentOptions.tag
+                ? `::${this.$vnode.componentOptions.tag}`
+                : '')
+            : this.$vnode.key;
+          const cache = this.$vnode.parent.componentInstance.cache;
+          if (cache[key]) {
+            // fix memory leaks
+            if (
+              this.$vnode.parent && this.$vnode.parent.componentOptions && this.$vnode.parent.componentOptions.children &&
+              Array.isArray(this.$vnode.parent.componentOptions.children)
+            ) {
+              this.$vnode.parent.componentOptions.children.length = 0
+            }
+            if (cache[vmCurrent.$vnode.key] && cache[vmCurrent.$vnode.key].parent && cache[vmCurrent.$vnode.key].parent.componentOptions) {
+              cache[vmCurrent.$vnode.key].parent.componentOptions.children = [cache[vmCurrent.$vnode.key]]
+              cache[vmCurrent.$vnode.key].parent.elm = cache[vmCurrent.$vnode.key].parent.componentInstance.$el
+            }
+            // if (
+            //   this.$parent.$children &&
+            //   Array.isArray(this.$parent.$children)
+            // ) {
+            //   const index = this.$parent.$children.indexOf(this);
+            //   if (index >= 0) {
+            //     this.$parent.$children.splice(index, 1);
+            //   }
+            // }
+          }
+        }
+      }
+    }
   };
 }

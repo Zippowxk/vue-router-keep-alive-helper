@@ -9,10 +9,10 @@ import {
   isPlaceHolderVm,
   setCurrentVnodeKey,
   replaceState,
-} from "./utils";
-import HistoryStack from "./historyStack";
+} from './utils';
+import HistoryStack from './historyStack';
 
-export default class VueRouterKeepAliveHelper{
+export default class VueRouterKeepAliveHelper {
   constructor({ Vue, router, replaceStay }) {
     this.Vue = Vue;
     this.router = router;
@@ -95,7 +95,7 @@ export default class VueRouterKeepAliveHelper{
     const pstmp = router.push;
     const pstmpf = (location, onComplete, onAbort) => {
       this.isReplace = false;
-      if (!onComplete && !onAbort && typeof Promise !== "undefined") {
+      if (!onComplete && !onAbort && typeof Promise !== 'undefined') {
         return pstmp.call(router, location, onComplete, onAbort);
       } else {
         pstmp.call(router, location, onComplete, onAbort);
@@ -137,7 +137,7 @@ export default class VueRouterKeepAliveHelper{
     };
     this.hacked = true;
   }
-  /**********  callback functions ************/
+  /** ********  callback functions ************/
   onInitial(vm) {
     const currentStateId = getStateId();
     if (isDef(currentStateId)) {
@@ -163,6 +163,9 @@ export default class VueRouterKeepAliveHelper{
     );
     if (shouldDestroy) {
       this.pre?.$keepAliveDestroy?.(vm);
+      this.pre = null;
+    } else {
+      this.pre?.$clearParent?.(vm);
       this.pre = null;
     }
     this.setState(this.stackPointer);
