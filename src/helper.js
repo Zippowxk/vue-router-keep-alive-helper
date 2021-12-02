@@ -150,6 +150,8 @@ export default class VueRouterKeepAliveHelper {
   onPush(vm) {
     this.setState(this.increaseStackPointer());
     this.historyStack.push(vm, this.stackPointer);
+    this.pre?.$clearParent?.(vm);
+    this.pre = null;
   }
   onBack(vm) {
     this.historyStack.pop(vm);
