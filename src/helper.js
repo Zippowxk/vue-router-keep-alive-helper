@@ -80,8 +80,8 @@ export default class VueRouterKeepAliveHelper {
         isDef(onAbort) && onAbort(e);
       });
     };
-    router.replace = function (ocation, onComplete, onAbort) {
-      rtmpf(ocation, onComplete, onAbort);
+    router.replace = function (location, onComplete, onAbort) {
+      rtmpf(location, onComplete, onAbort);
     };
 
     const gstmp = router.go;
@@ -159,17 +159,20 @@ export default class VueRouterKeepAliveHelper {
     this.historyStack.push(vm, this.stackPointer);
   }
   onReplace(vm) {
+    // avoidReplaceQuery is fix the issue : router.replace only a query by same path, may cause error
+    const avoidReplaceQuery = this.replacePrePath === this.router.history.current.path
     const shouldDestroy = !(
       isDef(this.replacePrePath) &&
-      this.replaceStay.includes(this.replacePrePath)
-    );
+      this.replaceStay.includes(this.replacePrePath)) && 
+      !avoidReplaceQuery
+
     if (shouldDestroy) {
       this.pre?.$keepAliveDestroy?.(vm);
-      this.pre = null;
-    } else {
+    } else if (!avoidReplaceQuery) {
       this.pre?.$clearParent?.(vm);
-      this.pre = null;
     }
+    
+    this.pre = null;
     this.setState(this.stackPointer);
     this.historyStack.push(vm, this.stackPointer);
     this.isReplace = false;
