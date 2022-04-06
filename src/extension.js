@@ -15,12 +15,13 @@ export function extendHistory(history) {
   };
 }
 
-export function extendVue(Vue) {
-  const dtmp = Vue.prototype.$destroy;
+export function extendVue(app) {
+  console.log(app)
+  // const dtmp = Vue.$.appContext.unmounted;
   /**
    * @description remove the cache in <keep-alive> component before invoke $destroy
    */
-  Vue.prototype.$keepAliveDestroy = function (vmCurrent) {
+   app.config.globalProperties.$keepAliveDestroy = function (vmCurrent) {
     if (this.$vnode && this.$vnode.data.keepAlive) {
       if (
         this.$vnode.parent &&
@@ -68,9 +69,9 @@ export function extendVue(Vue) {
         }
       }
     }
-    dtmp.apply(this, arguments);
+    // dtmp.apply(this, arguments);
   };
-  Vue.prototype.$clearParent = function (vmCurrent) {
+  app.config.globalProperties.$clearParent = function (vmCurrent) {
     if (this.$vnode && this.$vnode.data.keepAlive) {
       if (
         this.$vnode.parent &&
