@@ -1,6 +1,8 @@
 # vue-router-keep-alive-helper
 `Vue Router Keep-alive Helper` 是`Vue.js`项目中页面缓存自动管理工具，仅需一行配置代码即可使用。
 
+[Vue 3.x版本](https://github.com/Zippowxk/stack-keep-alive)
+
 [English](./README.md) | 简体中文
 
 ### 为什么需要本插件：
@@ -58,9 +60,9 @@ createHelper({Vue, router});
 2. 增加打包脚本
 
 ### TODO:
-1. `beforeRouteUpdate` 钩子使用给出用户警告
-2. 支持Vue.js 3 和 router 4
-3. 支持单元测试
+1. `beforeRouteUpdate` 钩子使用给出用户警告 
+2. 支持Vue.js 3 和 router 4 ✅  👉🏻[Vue 3.x版本](https://github.com/Zippowxk/stack-keep-alive)
+3. 支持单元测试 ✅ [Vue 3.x版本](https://github.com/Zippowxk/stack-keep-alive)
 
 ### Sample code
 

@@ -4,6 +4,8 @@
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 `Vue Router Keep-alive Helper` is an automatic tool for managing cache pages in the `Vue.js` project, only one line of configuration code can be used.
 
+[For Vue 3.x](https://github.com/Zippowxk/stack-keep-alive)
+
 English | [简体中文](./README_CN.md)
 
 ### Why you need this helper：
@@ -63,8 +65,8 @@ createHelper({Vue, router});
 
 ### TODO:
 1. `beforeRouteUpdate` hook warning to users
-2. Vue.js 3 support
-3. unit testing support
+2. Vue.js 3 support ✅ 👉🏻[For Vue 3.x](https://github.com/Zippowxk/stack-keep-alive)
+3. unit testing support ✅ 👉🏻[For Vue 3.x版本](https://github.com/Zippowxk/stack-keep-alive)
 
 ### Sample code
 
