@@ -8,6 +8,8 @@
 
 English | [简体中文](./README_CN.md)
 
+![img](./assets/stack.gif)
+
 ### Why you need this helper：
 
 When developing a SPA project of `Vue.js` with `vue-router`, `<keep-alive>` is always used to cach pages which are already routed,there are three options to manage the cache tree inside it,
