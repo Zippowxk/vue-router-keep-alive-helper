@@ -73,7 +73,7 @@ createHelper({Vue, router});
 ### Sample code
 
 1. [static file](./examples/)
-2. [webpack](https://github.com/Zippowxk/vue-router-helper-demo)
+2. [Node Project](https://github.com/Zippowxk/vue-router-helper-demo)
 
 Twitter **zippowxk**，Email: zippowangxinkai@gmail.com
 
