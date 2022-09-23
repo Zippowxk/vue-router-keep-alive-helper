@@ -68,6 +68,17 @@ export const getFirstComponentChild = function (children) {
     }
   }
 };
+
+
+export const  getRealChild = function (vnode) {
+  const compOptions = vnode && vnode.componentOptions
+  if (compOptions && compOptions.Ctor.options.abstract) {
+    return getRealChild(getFirstComponentChild(compOptions.children))
+  } else {
+    return vnode
+  }
+}
+
 const isAsyncPlaceholder = function (node) {
   return node.isComment && node.asyncFactory;
 };
@@ -83,3 +94,39 @@ export const replaceState = function (mode, router, id) {
 };
 
 export const inBrowser = typeof window !== 'undefined';
+
+
+
+
+export function cached (fn) {
+  const cache = Object.create(null)
+  return (function cachedFn (str) {
+    const hit = cache[str]
+    return hit || (cache[str] = fn(str))
+  })
+}
+
+/**
+ * Camelize a hyphen-delimited string.
+ */
+const camelizeRE = /-(\w)/g
+export const camelize = cached((str) => {
+  return str.replace(camelizeRE, (_, c) => c ? c.toUpperCase() : '')
+})
+
+export function extend (to, _from) {
+  for (const key in _from) {
+    to[key] = _from[key]
+  }
+  return to
+}
+
+export function isPrimitive (value) {
+  return (
+    typeof value === 'string' ||
+    typeof value === 'number' ||
+    // $flow-disable-line
+    typeof value === 'symbol' ||
+    typeof value === 'boolean'
+  )
+}

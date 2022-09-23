@@ -9,6 +9,7 @@ import {
   isPlaceHolderVm,
   setCurrentVnodeKey,
   replaceState,
+  getRealChild,
 } from './utils';
 import HistoryStack from './historyStack';
 
@@ -59,6 +60,11 @@ export default class VueRouterKeepAliveHelper {
           setCurrentVnodeKey(router, genKey(this.stackPointer, router));
           if (!this.hacked && current) {
             this.hackKeepAliveRender(current.$vnode.parent.componentInstance);
+            console.log(current.$vnode.parent)
+            if (current.$vnode.parent?.parent?.componentOptions?.tag === 'transition') {
+              console.log('!!!!!!!!!!!');
+              // this.hackTransitionRender(current.$vnode.parent?.parent.componentInstance);
+            }
           }
           this.historyShouldChange = false;
         }
@@ -118,7 +124,7 @@ export default class VueRouterKeepAliveHelper {
     const router = this.router;
     vm.$options.render = function () {
       const slot = this.$slots.default;
-      const vnode = getFirstComponentChild(slot); // vnode is a keep-alive-component-vnode
+      const vnode = getRealChild(slot); // vnode is a keep-alive-component-vnode
       if (self.historyShouldChange) {
         if (vnode && !isDef(vnode.key)) {
           if (self.isReplace) {
@@ -136,6 +142,30 @@ export default class VueRouterKeepAliveHelper {
       return tmp.apply(this, arguments);
     };
     this.hacked = true;
+  }
+  hackTransitionRender(vm) {
+    const tmp = vm.$options.render;
+    const self = this;
+    const router = this.router;
+    vm.$options.render = function () {
+      const slot = this.$slots.default;
+      const vnode = getFirstComponentChild(slot); // vnode is a keep-alive-component-vnode
+      if (self.historyShouldChange) {
+        if (vnode && !isDef(vnode.key)) {
+          if (self.isReplace) {
+            vnode.key = genKey(self.stackPointer, router);
+          } else if (self.isPush) {
+            vnode.key = genKey(self.stackPointer + 1, router);
+          } else {
+            vnode.key = genKey(self.stackPointer - 1, router);
+          }
+        }
+      } else {
+        // when historyShouldChange is false should rerender only, should not create new vm ,use the same vnode.key issue#7
+        vnode.key = genKey(self.stackPointer, router);
+      }
+      return tmp.apply(this, arguments);
+    };
   }
   /** ********  callback functions ************/
   onInitial(vm) {
