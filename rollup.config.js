@@ -34,7 +34,7 @@ export default [
         exclude: "node_modules/**",
         babelHelpers: 'bundled'
       }),
-      terser(),
+      // terser(),
     ],
   },
 ]

@@ -6,6 +6,7 @@
   "module": "dist/helper.esm.js",
   "scripts": {
     "build": "rollup -c rollup.config.js",
+    "buildw": "rollup --watch -c rollup.config.js",
     "contributors:add": "all-contributors add",
     "contributors:generate": "all-contributors generate"
   },
