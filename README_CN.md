@@ -55,15 +55,18 @@ createHelper({Vue, router});
   createHelper({Vue, router, replaceStay:["/home","/cart","/mine"]});
 ```
 
+
 ### 更新日志
+
+#### v0.1.0
+1. 支持transition组件，支持模拟原生前进后退动画
 #### v0.0.21
 1. 支持非全局keep-alive路由
 2. 增加打包脚本
 
-### TODO:
-1. `beforeRouteUpdate` 钩子使用给出用户警告 
-2. 支持Vue.js 3 和 router 4 ✅  👉🏻[Vue 3.x版本](https://github.com/Zippowxk/stack-keep-alive)
-3. 支持单元测试 ✅ [Vue 3.x版本](https://github.com/Zippowxk/stack-keep-alive)
+### 已知问题
+
+1. 不支持 `<router-link/>` 组件
 
 ### Sample code
 
