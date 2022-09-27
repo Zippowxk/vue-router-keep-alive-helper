@@ -1,4 +1,5 @@
 import Vue from '../../../debug/vue.js'
+// import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Home from '../views/Home.vue'
 
@@ -39,6 +40,7 @@ const router = new VueRouter({
 })
 
 import createHelper from '../../../dist/index.js'
+// import createHelper from 'vue-router-keep-alive-helper'
 createHelper({Vue, router});
 
 export default router

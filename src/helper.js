@@ -10,6 +10,8 @@ import {
   setCurrentVnodeKey,
   replaceState,
   getRealChild,
+  getStateForward,
+  setStateForward,
 } from './utils';
 import HistoryStack from './historyStack';
 
@@ -27,11 +29,16 @@ export default class VueRouterKeepAliveHelper {
     this.replaceStay = replaceStay || [];
     this.hacked = false;
     this.historyStack = new HistoryStack();
+    this.getTransitionName = ()=>{}
     this.init();
   }
   init() {
     this.routerHooks();
     this.hackRouter();
+  }
+  
+  setTransitionNameHandler(fn) {
+    this.getTransitionName = fn
   }
   /**
    * use afterEach hook to set state.key and add the reference of vm to the historyStack
@@ -39,6 +46,7 @@ export default class VueRouterKeepAliveHelper {
   routerHooks() {
     const router = this.router;
     router.afterEach((to, from) => {
+      setStateForward(to.fullPath)
       this.historyShouldChange = true;
       // get the vm instance after render
       this.Vue.nextTick(() => {
@@ -60,10 +68,8 @@ export default class VueRouterKeepAliveHelper {
           setCurrentVnodeKey(router, genKey(this.stackPointer, router));
           if (!this.hacked && current) {
             this.hackKeepAliveRender(current.$vnode.parent.componentInstance);
-            console.log(current.$vnode.parent)
             if (current.$vnode.parent?.parent?.componentOptions?.tag === 'transition') {
-              console.log('!!!!!!!!!!!');
-              // this.hackTransitionRender(current.$vnode.parent?.parent.componentInstance);
+              this.hackTransitionRender(current.$vnode.parent?.parent.componentInstance);
             }
           }
           this.historyShouldChange = false;
@@ -124,31 +130,6 @@ export default class VueRouterKeepAliveHelper {
     const router = this.router;
     vm.$options.render = function () {
       const slot = this.$slots.default;
-      const vnode = getRealChild(slot); // vnode is a keep-alive-component-vnode
-      if (self.historyShouldChange) {
-        if (vnode && !isDef(vnode.key)) {
-          if (self.isReplace) {
-            vnode.key = genKey(self.stackPointer, router);
-          } else if (self.isPush) {
-            vnode.key = genKey(self.stackPointer + 1, router);
-          } else {
-            vnode.key = genKey(self.stackPointer - 1, router);
-          }
-        }
-      } else {
-        // when historyShouldChange is false should rerender only, should not create new vm ,use the same vnode.key issue#7
-        vnode.key = genKey(self.stackPointer, router);
-      }
-      return tmp.apply(this, arguments);
-    };
-    this.hacked = true;
-  }
-  hackTransitionRender(vm) {
-    const tmp = vm.$options.render;
-    const self = this;
-    const router = this.router;
-    vm.$options.render = function () {
-      const slot = this.$slots.default;
       const vnode = getFirstComponentChild(slot); // vnode is a keep-alive-component-vnode
       if (self.historyShouldChange) {
         if (vnode && !isDef(vnode.key)) {
@@ -161,10 +142,63 @@ export default class VueRouterKeepAliveHelper {
           }
         }
       } else {
-        // when historyShouldChange is false should rerender only, should not create new vm ,use the same vnode.key issue#7
-        vnode.key = genKey(self.stackPointer, router);
+        if (vnode && !isDef(vnode.key)) {
+          // when historyShouldChange is false should rerender only, should not create new vm ,use the same vnode.key issue#7
+          vnode.key = genKey(self.stackPointer, router);
+        }
       }
       return tmp.apply(this, arguments);
+    };
+    this.hacked = true;
+  }
+  /**
+   * @description hack the render function of transition component, modify the key and transition-name of vnode when use <transition>
+   * @param {*} vm transition component instance
+   */
+  hackTransitionRender(vm) {
+    const tmp = vm.$options.render;
+    const self = this;
+    const router = this.router;
+    vm.$options.render = function () {
+      const slot = this.$slots.default;
+      let _key = ''
+      if (slot.length > 0) {
+        const vnode = getRealChild(slot[0]); // vnode is a keep-alive-component-vnode
+        if (self.historyShouldChange) {
+          if (vnode && !isDef(vnode.key)) {
+            if (self.isReplace) {
+              vnode.key = genKey(self.stackPointer, router);
+            } else if (self.isPush) {
+              vnode.key = genKey(self.stackPointer + 1, router);
+            } else {
+              vnode.key = genKey(self.stackPointer - 1, router);
+            }
+          }
+        } else {
+          // when historyShouldChange is false should rerender only, should not create new vm ,use the same vnode.key issue#7
+          if (vnode && !isDef(vnode.key)) {
+            vnode.key = genKey(self.stackPointer, router);
+          }
+        }
+        _key = vnode.key
+      }
+      const res =  tmp.apply(this, arguments);
+      // after render ,replace the key and update transition name
+      if (_key.length > 0) {
+        const vnode = getRealChild(slot[0])
+        vnode.key = _key
+        if (vnode && vnode.data && vnode.data.transition) {
+          vnode.data.transition.name = self.getTransitionName()
+          if (slot && slot.length > 0 && slot[0] && slot[0].context.$children) {
+            const len = slot[0].context.$children.length
+            const preVnode = slot[0].context.$children[len-1].$vnode
+            if (preVnode && preVnode.data && preVnode.data.transition) {
+              preVnode.data.transition.name = self.getTransitionName()
+            }
+          }
+        }
+      }
+      return res 
     };
   }
   /** ********  callback functions ************/
@@ -207,6 +241,9 @@ export default class VueRouterKeepAliveHelper {
     this.historyStack.push(vm, this.stackPointer);
     this.isReplace = false;
     this.replacePrePath = undefined;
+  }
+  get isBacking() {
+    return !(this.isPush || this.isReplace)
   }
   get currentVm() {
     return getCurrentVM(this.router);
