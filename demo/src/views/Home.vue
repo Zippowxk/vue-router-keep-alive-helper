@@ -15,7 +15,7 @@ export default {
     HelloWorld
   },
   beforeCreate() {
-    debugger
+    // debugger
     console.log('home before create');
   },
   methods: {

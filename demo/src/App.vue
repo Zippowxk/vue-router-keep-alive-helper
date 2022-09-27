@@ -1,14 +1,40 @@
 <template>
   <div id="app">
-    <!-- <transition name="slide-left" > -->
+    <transition :name="slideName">
       <keep-alive>
         <router-view/>
       </keep-alive>
-    <!-- </transition> -->
+    </transition>
   </div>
 </template>
+<script>
+import createHelper from '../../dist/index.js'
+export default {
+  data() {
+    return {
+      slideName: ''
+    }
+  },
+  watch: {
+    $route(to, from) {
+      const helper = createHelper()
+      helper.setTransitionNameHandler(()=>{
+        return this.slideName
+      })
+      if (helper.isBacking) {
+        this.slideName = "slide-right";
+      } else {
+        this.slideName = "slide-left";
+      }
+    },
+  },
+}
+</script>
 
 <style>
+* {
+  margin :0;
+}
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -16,7 +42,9 @@
   text-align: center;
   color: #2c3e50;
 }
-
+#app div{
+  background-color: #fff;
+}
 #nav {
   padding: 30px;
 }
@@ -48,7 +76,7 @@
   z-index: 99;
 }
 
-.slide-right-enter-from {
+.slide-right-enter {
   z-index: 1;
   transform: translate3d(-100%, 0, 0);
 }
@@ -58,7 +86,7 @@
   transform: translate3d(100%, 0, 0);
 }
 
-.slide-left-enter-from {
+.slide-left-enter {
   transform: translate3d(100%, 0, 0);
 }
 

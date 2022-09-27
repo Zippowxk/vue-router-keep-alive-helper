@@ -130,3 +130,18 @@ export function isPrimitive (value) {
     typeof value === 'boolean'
   )
 }
+
+export const getStateForward = function () {
+  const state = getCurrentState();
+  return isDef(state) ? state.__forward : undefined;
+}
+
+export const setStateForward = function (_path) {
+  const { pathname, search, hash } = window.location;
+  let path = `${pathname}${search}${hash}`;
+  let state = isDef(history.state) ? history.state : {};
+  state['__forward'] = _path;
+  // optimize file:// URL
+  const isFilSys = window.location.href.startsWith('file://');
+  history.replaceState(state, '', isFilSys ? null : path);
+}
