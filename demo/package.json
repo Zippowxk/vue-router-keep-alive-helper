@@ -9,7 +9,7 @@
   "dependencies": {
     "vue": "^2.6.11",
     "vue-router": "^3.2.0",
-    "vue-router-keep-alive-helper": "^0.0.28"
+    "vue-router-keep-alive-helper": "^0.1.0"
   },
   "devDependencies": {
     "@vue/cli-plugin-router": "~4.5.13",

@@ -39,8 +39,8 @@ const router = new VueRouter({
   routes
 })
 
-import createHelper from '../../../dist/index.js'
-// import createHelper from 'vue-router-keep-alive-helper'
+// import createHelper from '../../../dist/index.js'
+import createHelper from 'vue-router-keep-alive-helper'
 createHelper({Vue, router});
 
 export default router

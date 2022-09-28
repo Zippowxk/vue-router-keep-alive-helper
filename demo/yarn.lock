@@ -6515,10 +6515,10 @@ vue-loader@^15.9.2:
     vue-hot-reload-api "^2.3.0"
     vue-style-loader "^4.1.0"
 
-vue-router-keep-alive-helper@^0.0.28:
-  version "0.0.28"
-  resolved "https://registry.npmmirror.com/vue-router-keep-alive-helper/-/vue-router-keep-alive-helper-0.0.28.tgz#2651f55bf1fe27bf5dfbe05ea3c72337ba82ec8e"
-  integrity sha512-5U+19Zb0wXh6NyU5dYnAmiT8HP1b5WZjhK+rirg+6WUJPlx4HgQm7La3oEpSFPrr5BL1xJDv+v2Je5N8nNUHdA==
+vue-router-keep-alive-helper@^0.1.0:
+  version "0.1.0"
+  resolved "https://registry.npmjs.org/vue-router-keep-alive-helper/-/vue-router-keep-alive-helper-0.1.0.tgz#c049df5bfd39594e117577bc6201e72db7ae62ef"
+  integrity sha512-TcJQVQu08CrWUOMsoXbx3twwOFmODguQAt8KcPt/gP2koupKWYXYTx0dDMJ3Ie+JuQGaV3pCSqtKk9k6To3DxA==
 
 vue-router@^3.2.0:
   version "3.6.5"

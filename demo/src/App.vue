@@ -8,7 +8,9 @@
   </div>
 </template>
 <script>
-import createHelper from '../../dist/index.js'
+// import createHelper from '../../dist/index.js'
+import createHelper from 'vue-router-keep-alive-helper'
+
 export default {
   data() {
     return {
